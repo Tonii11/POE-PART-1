@@ -1,0 +1,58 @@
+name: Part 1 - Documentation Structure Validation
+
+on:
+  push:
+    branches: [ main, part-1, part1 ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check /docs folder exists
+        run: |
+          if [ ! -d "./docs" ]; then
+            echo "ERROR: /docs folder is missing."
+            exit 1
+          fi
+          echo "OK: /docs folder found."
+
+      - name: Check ERD file exists (PNG or PDF)
+        run: |
+          if ! ls ./docs/*.png ./docs/*.pdf 1> /dev/null 2>&1; then
+            echo "ERROR: No ERD file (.png or .pdf) found in /docs."
+            exit 1
+          fi
+          echo "OK: ERD file found."
+
+      - name: Check API Endpoint Plan exists (MD or PDF)
+        run: |
+          if ! ls ./docs/*Endpoint*.md ./docs/*Endpoint*.pdf 1> /dev/null 2>&1; then
+            echo "ERROR: API Endpoint Plan not found in /docs."
+            exit 1
+          fi
+          echo "OK: API Endpoint Plan found."
+
+      - name: Check SQL script exists
+        run: |
+          if ! ls ./docs/*.sql 1> /dev/null 2>&1; then
+            echo "ERROR: SQL script (.sql) not found in /docs."
+            exit 1
+          fi
+          echo "OK: SQL script found."
+
+      - name: Check README exists at repository root
+        run: |
+          if [ ! -f "./README.md" ]; then
+            echo "ERROR: README.md missing from repository root."
+            exit 1
+          fi
+          echo "OK: README.md found."
+
+      - name: Summary
+        run: echo "All Part 1 documentation requirements are present."
